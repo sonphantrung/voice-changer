@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -eu
 
 DOCKER_IMAGE=dannadori/voice-changer:20230129_152955
@@ -35,14 +35,14 @@ if [ "${MODE}" = "TRAIN" ]; then
     echo "トレーニングを開始します"
 
     docker run -it --rm --gpus all --shm-size=128M \
-        -v `pwd`/work_dir/logs:/voice-changer-internal/voice-change-service/MMVC_Trainer/logs \
-        -v `pwd`/work_dir/dataset:/voice-changer-internal/voice-change-service/MMVC_Trainer/dataset \
-        -v `pwd`/work_dir/info:/voice-changer-internal/voice-change-service/info \
-        -e LOCAL_UID=$(id -u $USER) \
-        -e LOCAL_GID=$(id -g $USER) \
-        -e EX_PORT=${EX_PORT} -e EX_TB_PORT=${EX_TB_PORT} \
-        -e EX_IP="`hostname -I`" \
-        -p ${EX_PORT}:18888 -p ${EX_TB_PORT}:6006 \
+        -v "$(pwd)"/work_dir/logs:/voice-changer-internal/voice-change-service/MMVC_Trainer/logs \
+        -v "$(pwd)"/work_dir/dataset:/voice-changer-internal/voice-change-service/MMVC_Trainer/dataset \
+        -v "$(pwd)"/work_dir/info:/voice-changer-internal/voice-change-service/info \
+        -e LOCAL_UID="$(id -u "$USER")" \
+        -e LOCAL_GID="$(id -g "$USER")" \
+        -e EX_PORT="${EX_PORT}" -e EX_TB_PORT="${EX_TB_PORT}" \
+        -e EX_IP="$(hostname -I)" \
+        -p "${EX_PORT}":18888 -p "${EX_TB_PORT}":6006 \
         $DOCKER_IMAGE "$@"
 
 
@@ -51,22 +51,22 @@ elif [ "${MODE}" = "MMVC" ]; then
         echo "MMVCを起動します(with gpu)"
 
         docker run -it --rm --gpus all --shm-size=128M \
-        -v `pwd`/vc_resources:/resources \
-        -e LOCAL_UID=$(id -u $USER) \
-        -e LOCAL_GID=$(id -g $USER) \
-        -e EX_IP="`hostname -I`" \
-        -e EX_PORT=${EX_PORT} \
-        -p ${EX_PORT}:18888 \
+        -v "$(pwd)"/vc_resources:/resources \
+        -e LOCAL_UID="$(id -u "$USER")" \
+        -e LOCAL_GID="$(id -g "$USER")" \
+        -e EX_IP="$(hostname -I)" \
+        -e EX_PORT="${EX_PORT}" \
+        -p "${EX_PORT}":18888 \
         $DOCKER_IMAGE "$@"
     else
         echo "MMVCを起動します(only cpu)"
         docker run -it --rm --shm-size=128M \
-        -v `pwd`/vc_resources:/resources \
-        -e LOCAL_UID=$(id -u $USER) \
-        -e LOCAL_GID=$(id -g $USER) \
-        -e EX_IP="`hostname -I`" \
-        -e EX_PORT=${EX_PORT} \
-        -p ${EX_PORT}:18888 \
+        -v "$(pwd)"/vc_resources:/resources \
+        -e LOCAL_UID="$(id -u "$USER")" \
+        -e LOCAL_GID="$(id -g "$USER")" \
+        -e EX_IP="$(hostname -I)" \
+        -e EX_PORT="${EX_PORT}" \
+        -p "${EX_PORT}":18888 \
         $DOCKER_IMAGE "$@"
     fi
 else
@@ -76,5 +76,3 @@ usage:
     MODE: select one of ['TRAIN', 'MMVC']
 " >&2
 fi
-
-
